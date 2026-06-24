@@ -16,8 +16,10 @@
 - Docker Desktop
 
 ### Запуск
-git clone <url>
+git clone https://github.com/LWYRUP1337/knowledge-search-system.git
+
 cp .env.example .env
+
 docker compose up --build
 
 ## Структура веток
