@@ -15,12 +15,12 @@
 ### Требования
 - Docker Desktop
 
-### Запуск
-git clone https://github.com/LWYRUP1337/knowledge-search-system.git
-
+### Запуск для всех!!!
+```bash
+git clone <url>
+cd knowledge-search-system
 cp .env.example .env
-
-docker compose up --build
+```
 
 ## Структура веток
 - main стабильная версия через PR
