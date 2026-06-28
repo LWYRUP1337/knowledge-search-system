@@ -1,0 +1,112 @@
+.zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-3);
+  padding: clamp(var(--space-6), 4vw, var(--space-10)) var(--space-4);
+  border: 2px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  background-color: var(--surface);
+  cursor: pointer;
+  transition:
+    border-color var(--dur) var(--ease-out),
+    background-color var(--dur) var(--ease-out),
+    transform var(--dur) var(--ease-out);
+}
+
+.zone:hover {
+  border-color: var(--accent-border);
+  background-color: var(--surface-2);
+}
+
+.active {
+  border-color: var(--accent);
+  background-color: var(--accent-surface);
+  transform: scale(1.005);
+}
+
+.reject {
+  border-color: var(--danger);
+  background-color: var(--danger-surface);
+}
+
+.illustration {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-1);
+}
+
+.fileBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+.fileBadge svg {
+  width: 1.6rem;
+  height: 1.6rem;
+}
+.pdf {
+  background-color: var(--danger-surface);
+  color: var(--danger);
+  transform: rotate(-6deg);
+}
+.doc {
+  background-color: var(--accent-surface);
+  color: var(--accent-strong);
+  transform: rotate(6deg);
+}
+
+.uploadMark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: var(--radius-full);
+  background-color: var(--accent);
+  color: var(--accent-text);
+  box-shadow: var(--shadow-md);
+  z-index: 1;
+}
+.uploadMark svg {
+  width: 1.8rem;
+  height: 1.8rem;
+}
+
+.title {
+  font-size: var(--text-xl);
+  font-weight: 600;
+}
+
+.hint {
+  color: var(--text-muted);
+  font-size: var(--text-sm);
+}
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+  height: 2.5rem;
+  padding-inline: var(--space-4);
+  border-radius: var(--radius-sm);
+  background-color: var(--accent);
+  color: var(--accent-text);
+  font-weight: 500;
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+.zone:hover .cta {
+  background-color: var(--accent-strong);
+}
+.cta svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
