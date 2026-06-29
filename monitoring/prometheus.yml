@@ -1,0 +1,22 @@
+global:
+  scrape_interval: 15s
+  # каждые 15 секунд Prometheus стучится к сервисам и собирает метрики
+  evaluation_interval: 15s
+  # каждые 15 секунд вычисляет правила алертов (если они есть)
+
+scrape_configs:
+
+  - job_name: 'backend'
+    # имя job — будет видно в Grafana как метка
+    static_configs:
+      - targets: ['backend:8000']
+        # адрес бэкенда внутри Docker сети
+        # Prometheus будет ходить на http://backend:8000/metrics
+    metrics_path: '/metrics'
+    # эндпоинт откуда забирать метрики
+    # бекендер добавит его через prometheus-fastapi-instrumentator
+
+  - job_name: 'prometheus'
+    # Prometheus мониторит сам себя — стандартная практика
+    static_configs:
+      - targets: ['localhost:9090']
