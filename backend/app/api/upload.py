@@ -1,7 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from uuid import uuid4
 import os
-from datetime import datetime
 
 from app.core.config import settings
 from app.services.parsing_service import parse_document

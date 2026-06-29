@@ -2,7 +2,6 @@ from pydantic import BaseModel, Field
 from uuid import UUID
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel
 
 class DocumentUploadResponse(BaseModel):
     document_id: str
