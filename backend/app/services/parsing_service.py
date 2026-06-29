@@ -10,17 +10,23 @@ def parse_pdf(file_content: bytes, file_name: str) -> List[Tuple[int, str]]:
 
     try:
         with pdfplumber.open(io.BytesIO(file_content)) as pdf:
+            if len(pdf.pages) == 0:
+                raise ValueError("PDF файл пустой (не содержит страниц)")
+
             for page_num, page in enumerate(pdf.pages, start=1):
                 text = page.extract_text()
                 if text and text.strip():
                     pages_text.append((page_num, text.strip()))
                 else:
                     pages_text.append((page_num, ""))
+
+    except ValueError as e:
+        raise ValueError(f"Ошибка при парсинге PDF: {str(e)}")
     except Exception as e:
         raise ValueError(f"Ошибка при парсинге PDF: {str(e)}")
 
     if not pages_text or all(text == "" for _, text in pages_text):
-        raise ValueError("Не удалось извлечь текст из PDF файла")
+        raise ValueError("Не удалось извлечь текст из PDF")
 
     return pages_text
 
@@ -37,10 +43,12 @@ def parse_docx(file_content: bytes, file_name: str) -> List[Tuple[int, str]]:
         text = "\n".join(full_text)
 
         if not text.strip():
-            raise ValueError("Не удалось извлечь текст из DOCX файла")
+            raise ValueError("Не удалось извлечь текст из DOCX")
 
         return [(1, text)]
 
+    except ValueError as e:
+        raise ValueError(f"Ошибка при парсинге DOCX: {str(e)}")
     except Exception as e:
         raise ValueError(f"Ошибка при парсинге DOCX: {str(e)}")
 
