@@ -1,0 +1,218 @@
+.screen {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: var(--space-5);
+  background:
+    radial-gradient(1200px 600px at 100% -10%, var(--accent-surface), transparent 60%),
+    var(--bg);
+}
+
+.themeToggle {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  width: 100%;
+  max-width: 420px;
+}
+
+.panel {
+  display: none;
+}
+
+.formCard {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: clamp(var(--space-5), 4vw, var(--space-8));
+  box-shadow: var(--shadow-lg);
+}
+
+.formHead {
+  margin-bottom: var(--space-5);
+}
+
+.mobileBrand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius);
+  background-color: var(--accent);
+  color: var(--accent-text);
+  margin-bottom: var(--space-3);
+}
+.mobileBrand svg {
+  width: 1.3rem;
+  height: 1.3rem;
+}
+
+.title {
+  font-size: var(--text-2xl);
+  font-weight: 600;
+}
+
+.subtitle {
+  margin-top: var(--space-1);
+  color: var(--text-muted);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.label {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.inputWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inputIcon {
+  position: absolute;
+  left: var(--space-3);
+  width: 1.15rem;
+  height: 1.15rem;
+  color: var(--text-faint);
+  pointer-events: none;
+}
+
+.input {
+  width: 100%;
+  height: 2.75rem;
+  padding: 0 var(--space-3) 0 2.6rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-strong);
+  background-color: var(--surface-2);
+  color: var(--text);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+.input::placeholder {
+  color: var(--text-faint);
+}
+.input:focus {
+  outline: none;
+  border-color: var(--accent);
+  background-color: var(--surface);
+  box-shadow: 0 0 0 3px var(--accent-ring);
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.error {
+  color: var(--danger);
+  font-size: var(--text-sm);
+}
+
+.hint {
+  margin-top: var(--space-4);
+  color: var(--text-faint);
+  font-size: var(--text-sm);
+  text-align: center;
+}
+
+@media (min-width: 860px) {
+  .layout {
+    grid-template-columns: 1.05fr 1fr;
+    max-width: 920px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    background-color: var(--surface);
+  }
+
+  .panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-6);
+    padding: var(--space-8);
+    background: linear-gradient(160deg, var(--accent), var(--accent-strong));
+    color: var(--accent-text);
+  }
+
+  .formCard {
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .mobileBrand {
+    display: none;
+  }
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 600;
+  font-size: var(--text-md);
+}
+
+.brandMark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-sm);
+  background-color: rgb(255 255 255 / 0.18);
+}
+.brandMark svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.panelTitle {
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+  max-width: 18ch;
+}
+
+.features {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.features li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.features svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  opacity: 0.92;
+}

@@ -1,0 +1,24 @@
+.spinner {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--accent);
+  animation: spinner-rotate 0.7s linear infinite;
+}
+
+.big {
+  width: 2rem;
+  height: 2rem;
+}
+
+.page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40vh;
+}
+
+@keyframes spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.upload import router
+from app.api.upload import router as upload_router
+from app.api.search import router as search_router
 
 app = FastAPI(
     title="Knowledge Base API",
@@ -8,11 +9,12 @@ app = FastAPI(
     version="1.0.0",
 )
 
-app.include_router(router)
+app.include_router(upload_router)
+app.include_router(search_router)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # В продакшене ограничить
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -20,7 +22,7 @@ app.add_middleware(
 
 @app.get("/")
 async def root():
-    return {"message": "Intelligent Search System API"}
+    return {"message": "Knowledge Base API"}
 
 @app.get("/health")
 async def health_check():
