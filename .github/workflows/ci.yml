@@ -72,7 +72,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r backend/requirements.txt pytest python-multipart
+          pip install -r backend/requirements.txt pytest python-multipart httpx
 
       - name: Run pytest
         run: |
@@ -93,31 +93,22 @@ jobs:
         run: cp .env.example .env
 
       - name: Start services
-        run: |
-          docker compose up -d --build
-          sleep 30
+        run: docker compose up -d --build
 
-      - name: Wait for Elasticsearch
+      - name: Wait for backend
         run: |
+          echo "Waiting for backend to become healthy..."
           for i in {1..60}; do
-            if curl -s http://localhost:9200/_cluster/health | grep -q '"status":"green\|yellow"'; then
-              echo "Elasticsearch is ready"
-              break
+            if curl -sf http://localhost:8000/health > /dev/null 2>&1; then
+              echo "Backend is ready (attempt $i)"
+              exit 0
             fi
-            echo "Waiting for Elasticsearch... ($i/60)"
-            sleep 2
-          done
-
-      - name: Wait for Backend
-        run: |
-          for i in {1..30}; do
-            if curl -sf http://localhost:8000/health; then
-              echo "Backend is ready"
-              break
-            fi
-            echo "Waiting for backend... ($i/30)"
+            echo "Attempt $i/60: backend not ready yet, retrying in 5s..."
             sleep 5
           done
+          echo "Backend failed to become healthy after 60 attempts"
+          docker compose logs backend --tail=50
+          exit 1
 
       - name: Upload test document
         run: |
@@ -145,7 +136,9 @@ jobs:
       - name: Print logs if failed
         if: failure()
         run: |
+          echo "Backend logs:"
           docker compose logs backend --tail=50
+          echo "Elasticsearch logs:"
           docker compose logs elasticsearch --tail=30
 
 
