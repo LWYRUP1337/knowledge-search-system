@@ -132,7 +132,7 @@ jobs:
           echo "Waiting for Elasticsearch to index the document..."
 
           for i in {1..10}; do
-            RESPONSE=$(curl -s -G "http://localhost:8000/api/v1/search" --data-urlencode "q=каникулы")
+            RESPONSE=$(curl -s -G "http://localhost:8000/api/v1/search/" --data-urlencode "q=каникулы")
             echo "Attempt $i: Backend response -> $RESPONSE"
 
             if echo "$RESPONSE" | grep -q "каникулы"; then
