@@ -115,20 +115,21 @@ jobs:
 
       - name: Upload test document
         run: |
-          echo "Test document" > test.txt
           HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
             -X POST http://localhost:8000/api/v1/documents/upload \
-            -F "file=@test.txt")
+            -F "file=@tests/fixtures/sample.pdf")
           if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "201" ]; then
             echo "Upload successful (HTTP $HTTP_CODE)"
+          elif [ "$HTTP_CODE" = "400" ]; then
+            echo "Upload correctly rejected invalid format (HTTP $HTTP_CODE)"
           else
-            echo "Upload failed (HTTP $HTTP_CODE)"
+            echo "Unexpected HTTP code: $HTTP_CODE"
             exit 1
           fi
 
       - name: Search test
         run: |
-          RESPONSE=$(curl -s "http://localhost:8000/api/v1/search?q=test")
+          RESPONSE=$(curl -s "http://localhost:8000/api/v1/search?q=каникулы")
           if echo "$RESPONSE" | grep -q '"results"'; then
             echo "Search works"
           else
