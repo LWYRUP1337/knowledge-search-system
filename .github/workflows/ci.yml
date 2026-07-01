@@ -71,18 +71,140 @@ jobs:
           cache: 'pip'
 
       - name: Install dependencies
-        run: pip install -r requirements.txt pytest
+        run: |
+          pip install -r requirements.txt pytest python-multipart
         working-directory: backend
 
       - name: Run pytest
-        run: pytest tests/ -v --tb=short
+        run: |
+          pytest tests/ -v --tb=short \
+            --ignore=tests/test_e2e.py \
+            --ignore=tests/test_e2e_search.py
         working-directory: backend
+
+
+  test-integration:
+    name: Integration Tests (Upload & Search)
+    runs-on: ubuntu-latest
+    needs: [lint-backend, lint-frontend]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create .env file
+        run: cp .env.example .env
+
+      - name: Start services
+        run: |
+          docker compose up -d --build
+          sleep 30
+
+      - name: Wait for Elasticsearch
+        run: |
+          for i in {1..60}; do
+            if curl -s http://localhost:9200/_cluster/health | grep -q '"status":"green\|yellow"'; then
+              echo "Elasticsearch is ready"
+              break
+            fi
+            echo "Waiting for Elasticsearch... ($i/60)"
+            sleep 2
+          done
+
+      - name: Wait for Backend
+        run: |
+          for i in {1..30}; do
+            if curl -sf http://localhost:8000/health; then
+              echo "Backend is ready"
+              break
+            fi
+            echo "Waiting for backend... ($i/30)"
+            sleep 5
+          done
+
+      - name: Upload test document
+        run: |
+          echo "Test document" > test.txt
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X POST http://localhost:8000/api/v1/documents/upload \
+            -F "file=@test.txt")
+          if [ "$HTTP_STATUS" = "200" ] || [ "$HTTP_STATUS" = "201" ]; then
+            echo "Upload successful (HTTP $HTTP_STATUS)"
+          else
+            echo "Upload failed (HTTP $HTTP_STATUS)"
+            exit 1
+          fi
+
+      - name: Search test
+        run: |
+          RESPONSE=$(curl -s "http://localhost:8000/api/v1/search?q=test")
+          if echo "$RESPONSE" | grep -q '"results"'; then
+            echo "Search works"
+          else
+            echo "Search failed"
+            exit 1
+          fi
+
+      - name: Print logs if failed
+        if: failure()
+        run: |
+          docker compose logs backend --tail=50
+          docker compose logs elasticsearch --tail=30
+
+
+  test-e2e:
+    name: E2E Tests (Playwright)
+    runs-on: ubuntu-latest
+    needs: [test-integration]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create .env file
+        run: cp .env.example .env
+
+      - name: Start services
+        run: |
+          docker compose up -d --build
+          sleep 30
+
+      - name: Wait for Frontend
+        run: |
+          for i in {1..30}; do
+            if curl -sf http://localhost; then
+              echo "Frontend is ready"
+              break
+            fi
+            echo "Waiting for frontend... ($i/30)"
+            sleep 5
+          done
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install pytest playwright pytest-playwright
+
+      - name: Install Playwright browsers
+        run: |
+          playwright install chromium
+
+      - name: Run E2E tests
+        run: |
+          cd backend
+          pytest tests/test_e2e.py tests/test_e2e_search.py -v --tb=short
+        env:
+          BASE_URL: "http://localhost"
 
 
   build-and-push:
     name: Build & Push Docker Images
     runs-on: ubuntu-latest
-    needs: [lint-backend, lint-frontend, test-backend]
+    needs: [lint-backend, lint-frontend, test-backend, test-integration, test-e2e]
 
     if: github.event_name == 'pull_request' && github.base_ref == 'main'
 
