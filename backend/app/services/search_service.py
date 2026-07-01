@@ -3,29 +3,49 @@ from app.core.elasticsearch import es_client
 from app.services.index_service import INDEX_NAME
 
 
-def search_documents(query: str, page: int = 1, size: int = 10) -> Dict[str, Any]:
+def search_documents(query: str,
+                     page: int = 1,
+                     size: int = 10,
+                     file_filter: str = None
+                     ) -> Dict[str, Any]:
     from_idx = (page - 1) * size
 
     search_body = {
         "query": {
-            "multi_match": {
-                "query": query,
-                "fields": ["text", "file_name"],
-                "type": "best_fields",
-                "fuzziness": "AUTO"
+            "bool": {
+                "must": [
+                    {
+                        "multi_match": {
+                            "query": query,
+                            "fields": ["text^2", "file_name^1.5"],
+                            "type": "best_fields",
+                            "fuzziness": "AUTO",
+                            "operator": "or"
+                        }
+                    }
+                ]
             }
         },
         "from": from_idx,
-        "size": size,
         "highlight": {
             "fields": {
                 "text": {
                     "fragment_size": 200,
-                    "number_of_fragments": 1
+                    "number_of_fragments": 2,
+                    "pre_tags": ["<mark>"],
+                    "post_tags": ["</mark>"]
                 }
             }
-        }
+        },
+        "sort": [
+            {"_score": {"order": "desc"}}
+        ]
     }
+
+    if file_filter:
+        search_body["query"]["bool"]["filter"] = [
+            {"match": {"file_name": file_filter}}
+        ]
 
 
     response = es_client.search(
@@ -36,13 +56,15 @@ def search_documents(query: str, page: int = 1, size: int = 10) -> Dict[str, Any
     results = []
     for hit in response["hits"]["hits"]:
         source = hit["_source"]
-        results.append({
+        result = {
             "chunk_id": source.get("chunk_id"),
             "file_name": source.get("file_name"),
             "page": source.get("page_number"),
             "text": source.get("text"),
-            "score": hit["_score"]
-        })
+            "score": hit["_score"],
+            "highlight": hit.get("highlight", {}).get("text", [source.get("text")])[0]
+        }
+        results.append(result)
 
     total = response["hits"]["total"]["value"]
     total_pages = (total + size - 1) // size if total > 0 else 0

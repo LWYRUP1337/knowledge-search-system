@@ -27,6 +27,7 @@ class SearchResultItem(BaseModel):
     page: Optional[int] = None
     text: str
     score: float
+    highlight: Optional[str] = None
 
 class SearchResponse(BaseModel):
     results: list[SearchResultItem]
