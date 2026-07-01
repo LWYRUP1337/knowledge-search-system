@@ -137,6 +137,14 @@ jobs:
             exit 1
           fi
 
+      - name: Debug Elasticsearch
+        run: |
+          echo "Индексы:"
+          curl -s http://localhost:9200/_cat/indices
+          echo ""
+          echo "Документы в индексе:"
+          curl -s "http://localhost:9200/documents/_search?pretty&size=1"
+
       - name: Show logs if failed
         if: failure()
         run: |
