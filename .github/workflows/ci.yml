@@ -81,7 +81,7 @@ jobs:
 
 
   test-integration:
-    name: Integration Tests (Upload & Search)
+    name: Integration Tests
     runs-on: ubuntu-latest
     needs: [lint-backend, lint-frontend]
 
