@@ -111,6 +111,21 @@ jobs:
           docker compose logs backend --tail=50
           exit 1
 
+      - name: Wait for Elasticsearch
+        run: |
+          echo "Waiting for Elasticsearch to be ready..."
+          for i in {1..60}; do
+            if curl -s http://localhost:9200/_cluster/health | grep -q '"status":"green\|yellow"'; then
+              echo "Elasticsearch is ready (attempt $i)"
+              exit 0
+            fi
+            echo "Attempt $i/60: Elasticsearch not ready yet..."
+            sleep 2
+          done
+          echo "Elasticsearch failed to become ready after 60 attempts"
+          docker compose logs elasticsearch --tail=30
+          exit 1
+
       - name: Upload test document
         run: |
           echo "Test document" > test.txt
@@ -141,6 +156,14 @@ jobs:
           docker compose logs backend --tail=50
           echo "Elasticsearch logs:"
           docker compose logs elasticsearch --tail=30
+
+      - name: Print Elasticsearch logs if failed
+        if: failure()
+        run: |
+          echo "=== Elasticsearch logs ==="
+          docker compose logs elasticsearch --tail=100
+          echo "=== Backend logs ==="
+          docker compose logs backend --tail=50
 
 
   build-and-push:
