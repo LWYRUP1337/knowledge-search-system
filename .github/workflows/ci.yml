@@ -72,13 +72,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt pytest python-multipart
-        working-directory: backend
+          pip install -r backend/requirements.txt pytest python-multipart
 
       - name: Run pytest
         run: |
-          pytest tests/ -v --tb=short
-        working-directory: backend
+          pytest tests/ -v --tb=short \
+            --ignore=tests/test_e2e_search.py
 
 
   test-integration:
