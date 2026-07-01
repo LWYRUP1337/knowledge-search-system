@@ -72,12 +72,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r backend/requirements.txt pytest python-multipart httpx
+          pip install -r backend/requirements.txt pytest python-multipart
 
       - name: Run pytest
         run: |
           pytest tests/ -v --tb=short \
-            --ignore=tests/test_e2e_search.py
+            --ignore=tests/test_e2e_search.py \
+            -m "not integration"
 
 
   test-integration:
