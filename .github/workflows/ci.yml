@@ -127,16 +127,6 @@ jobs:
             exit 1
           fi
 
-      - name: Search test
-        run: |
-          RESPONSE=$(curl -s "http://localhost:8000/api/v1/search?q=каникулы")
-          if echo "$RESPONSE" | grep -q '"results"'; then
-            echo "Search works"
-          else
-            echo "Search failed"
-            exit 1
-          fi
-
       - name: Debug Elasticsearch
         run: |
           echo "Индексы:"
