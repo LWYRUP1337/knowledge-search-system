@@ -127,13 +127,26 @@ jobs:
             exit 1
           fi
 
-      - name: Debug Elasticsearch
+      - name: Search test
         run: |
-          echo "Индексы:"
-          curl -s http://localhost:9200/_cat/indices
-          echo ""
-          echo "Документы в индексе:"
-          curl -s "http://localhost:9200/documents/_search?pretty&size=1"
+          echo "Waiting for Elasticsearch to index the document..."
+
+          for i in {1..10}; do
+            RESPONSE=$(curl -s -G "http://localhost:8000/api/v1/search" --data-urlencode "q=каникулы")
+            echo "Attempt $i: Backend response -> $RESPONSE"
+
+            if echo "$RESPONSE" | grep -q "каникулы"; then
+              echo "Search integration test PASSED successfully!"
+              exit 0
+            fi
+
+            echo "Word not found yet, sleeping 2 seconds..."
+            sleep 2
+          done
+
+          echo "Search integration test FAILED: 'каникулы' not found in results."
+          exit 1
+
 
       - name: Show logs if failed
         if: failure()

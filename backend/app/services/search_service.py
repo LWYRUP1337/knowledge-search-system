@@ -20,7 +20,8 @@ def search_documents(query: str,
                             "fields": ["text^2", "file_name^1.5"],
                             "type": "best_fields",
                             "fuzziness": "AUTO",
-                            "operator": "or"
+                            "operator": "or",
+                            "analyzer": "russian_analyzer" 
                         }
                     }
                 ]
@@ -46,7 +47,6 @@ def search_documents(query: str,
         search_body["query"]["bool"]["filter"] = [
             {"match": {"file_name": file_filter}}
         ]
-
 
     response = es_client.search(
         index=INDEX_NAME,
