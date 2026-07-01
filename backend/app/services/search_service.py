@@ -1,4 +1,4 @@
-from typing import Dict, Any, List
+from typing import Dict, Any
 from app.core.elasticsearch import es_client
 from app.services.index_service import INDEX_NAME
 
