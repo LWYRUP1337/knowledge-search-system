@@ -5,7 +5,6 @@ from playwright.sync_api import sync_playwright
 
 BASE_URL = os.getenv("BASE_URL", "http://localhost:5173")
 
-
 FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixtures')
 
 
@@ -51,7 +50,7 @@ def test_full_user_scenario(browser):
     page.wait_for_selector("text=Поиск по документам", timeout=30000)
 
     search_input = page.get_by_placeholder("Введите запрос, например: договор оплата")
-    search_input.fill("договор")
+    search_input.fill("предоставить")
 
     page.click('button:has-text("Найти")')
 
