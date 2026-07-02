@@ -8,6 +8,10 @@ class Settings(BaseSettings):
     ELASTICSEARCH_HOST: str = "localhost"
     ELASTICSEARCH_PORT: int = 9200
 
+    REDIS_HOST: str = "localhost"
+    REDIS_PORT: int = 6379
+    REDIS_TTL: int = 300
+
     MAX_FILE_SIZE_MB: int = 20
     CHUNK_SIZE: int = 1000
     CHUNK_OVERLAP: int = 100
