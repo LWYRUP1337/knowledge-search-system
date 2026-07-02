@@ -21,6 +21,10 @@ export interface ResultCardProps extends ComponentPropsWithoutRef<'article'> {
 }
 
 export function ResultCard({ result, query, className, ...rest }: ResultCardProps) {
+  
+  const safeQuery = query || ''
+  const safeSnippet = result.snippet || ''
+
   return (
     <article className={cn(styles.card, className)} {...rest}>
       <div className={styles.head}>
@@ -39,7 +43,7 @@ export function ResultCard({ result, query, className, ...rest }: ResultCardProp
           <span className={styles.scoreLabel}>релевантность</span>
         </div>
       </div>
-      <p className={styles.snippet}>{highlight(result.snippet, query)}</p>
+      <p className={styles.snippet}>{highlight(safeSnippet, safeQuery)}</p>
     </article>
   )
 }

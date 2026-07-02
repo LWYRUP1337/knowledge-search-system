@@ -21,6 +21,7 @@ export interface SearchResultsProps {
 const NO_RESULTS = 'По вашему запросу ничего не найдено. Попробуйте изменить формулировку'
 
 export function SearchResults({ query, page, onPageChange }: SearchResultsProps) {
+  
   const { data, isFetching, isError, refetch, isPlaceholderData } = useSearch(query, page)
   const listRef = useRef<HTMLDivElement>(null)
 
@@ -93,7 +94,8 @@ export function SearchResults({ query, page, onPageChange }: SearchResultsProps)
         </p>
         <div className={cn(styles.list, isFetching && isPlaceholderData && styles.dim)} ref={listRef}>
           {data.items.map((result) => (
-            <ResultCard key={result.id} data-result result={result} query={data.query} />
+
+            <ResultCard key={result.id} data-result result={result} query={query} />
           ))}
         </div>
         <Pagination

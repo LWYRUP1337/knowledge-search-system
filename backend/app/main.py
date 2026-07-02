@@ -3,9 +3,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import time
 from fastapi.responses import PlainTextResponse
-from app.api.upload import router as upload_router
 from app.api.search import router as search_router
 from app.services.index_service import create_index
+from app.api import auth
+from app.api import upload
+
+
+
 
 
 @asynccontextmanager
@@ -32,8 +36,9 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-app.include_router(upload_router)
+app.include_router(upload.router)
 app.include_router(search_router)
+app.include_router(auth.router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -42,6 +47,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
 
 @app.get("/")
 async def root():

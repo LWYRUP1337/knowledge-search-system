@@ -21,7 +21,7 @@ export function DocumentCard({ doc, onDelete, deleting, className, ...rest }: Do
   return (
     <article className={cn(styles.card, doc.status === 'error' && styles.errorCard, className)} {...rest}>
       <div className={styles.top}>
-        <FileIcon mimeType={doc.mimeType} />
+        <FileIcon mimeType={doc.mimeType || doc.name} />
         <div className={styles.info}>
           <h3 className={styles.name} title={doc.name}>
             {doc.name}

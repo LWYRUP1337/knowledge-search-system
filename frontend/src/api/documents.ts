@@ -36,7 +36,7 @@ export interface UploadOptions {
 export function uploadDocument(file: File, options: UploadOptions = {}): Promise<DocumentDto> {
   return new Promise<DocumentDto>((resolve, reject) => {
     const xhr = new XMLHttpRequest()
-    xhr.open('POST', `${API_BASE_URL}/documents`)
+    xhr.open('POST', `${API_BASE_URL}/documents/upload`)
     xhr.responseType = 'json'
     xhr.timeout = 120_000
 

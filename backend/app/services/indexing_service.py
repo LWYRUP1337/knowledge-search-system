@@ -7,7 +7,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def index_chunks(chunks: List[Dict[str, Any]]) -> int:
+def index_chunks(
+    chunks: List[Dict[str, Any]],
+    file_size: int,
+    mime_type: str,
+    status = "ready",
+    ) -> int:
     if not chunks:
         return 0
 
@@ -17,11 +22,15 @@ def index_chunks(chunks: List[Dict[str, Any]]) -> int:
         try:
             chunk["upload_date"] = datetime.now().isoformat()
 
+            chunk["status"] = status
+            chunk["size"] = file_size
+            chunk["mime_type"] = mime_type
+
             response = es_client.index(
                 index=INDEX_NAME,
                 id=chunk["chunk_id"],
-                document=chunk
-            )
+                document=chunk,
+        )
 
             if response.get("result") in ["created", "updated"]:
                 indexed_count += 1

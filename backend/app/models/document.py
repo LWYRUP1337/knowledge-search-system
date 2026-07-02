@@ -1,36 +1,77 @@
-from pydantic import BaseModel, Field
-from uuid import UUID
 from datetime import datetime
-from typing import Optional
+from typing import Generic, List, Optional, TypeVar
+
+from pydantic import BaseModel, Field
+
+
+T = TypeVar("T")
+
+
 
 class DocumentUploadResponse(BaseModel):
-    document_id: str
-    file_name: str
+    id: str
+    name: str
+    size: int
+    mimeType: str
+    pages: int
     status: str
-    chunks_count: int
+    progress: int
+    uploadedAt: datetime
+    indexedAt: Optional[datetime] = None
+    error: Optional[str] = None
     message: str
 
+
 class DocumentMetadata(BaseModel):
-    document_id: UUID
-    file_name: str
-    upload_date: datetime
-    status: str  # "uploaded", "indexing", "indexed", "error"
+    id: str
+    name: str
+    size: int
+    mimeType: str
+    pages: Optional[int] = None
+    status: str
+    progress: int = 100
+    uploadedAt: datetime
+    indexedAt: Optional[datetime] = None
+    error: Optional[str] = None
+
+
 
 class SearchRequest(BaseModel):
-    query: str = Field(..., min_length=1, description="Поисковый запрос")
-    page: int = Field(1, ge=1, description="Номер страницы")
-    size: int = Field(10, ge=1, le=100, description="Количество результатов на странице")
+    query: str = Field(..., min_length=1)
+    page: int = Field(1, ge=1)
+    size: int = Field(10, ge=1, le=100)
+
+
 
 class SearchResultItem(BaseModel):
-    chunk_id: str
-    file_name: str
+    id: str
+    documentId: Optional[str] = None
+    fileName: str
     page: Optional[int] = None
-    text: str
+    snippet: str
     score: float
+    highlights: List[dict] = []
+
+
 
 class SearchResponse(BaseModel):
-    results: list[SearchResultItem]
+    items: List[SearchResultItem]
     total: int
     page: int
     size: int
-    pages: int
+    totalPages: int
+
+
+
+class PaginatedResponse(BaseModel, Generic[T]):
+    items: List[T]
+    total: int
+    page: int
+    size: int
+    totalPages: int
+
+class SearchHistoryItem(BaseModel):
+    id: str
+    query: str
+    createdAt: str 
+    resultsCount: int

@@ -6,12 +6,15 @@ import styles from './page.module.css'
 
 export default function SearchPage() {
   const [params, setParams] = useSearchParams()
-  const query = params.get('q') ?? ''
+  const query = params.get('q') ?? '' 
   const page = Math.max(1, Number(params.get('page') ?? '1') || 1)
 
   const handleSearch = (next: string) => {
     const nextParams = new URLSearchParams()
-    if (next) nextParams.set('q', next)
+
+    if (next && next.trim()) {
+      nextParams.set('q', next.trim())
+    }
     setParams(nextParams)
   }
 

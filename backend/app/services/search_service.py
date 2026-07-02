@@ -40,7 +40,7 @@ def search_documents(query: str,
                             "type": "best_fields",
                             "fuzziness": "AUTO",
                             "operator": "or",
-                            "analyzer": "russian_analyzer"
+                            
                         }
                     }
                 ]
@@ -76,24 +76,27 @@ def search_documents(query: str,
     for hit in response["hits"]["hits"]:
         source = hit["_source"]
         result = {
-            "chunk_id": source.get("chunk_id"),
-            "file_name": source.get("file_name"),
+            "id": source.get("chunk_id"),
+            "documentId": source.get("document_id"),
+            "fileName": source.get("file_name"),
             "page": source.get("page_number"),
-            "text": source.get("text"),
+            "snippet": hit.get("highlight", {}).get("text", [source.get("text")])[0],
             "score": hit["_score"],
-            "highlight": hit.get("highlight", {}).get("text", [source.get("text")])[0]
+            "highlights": []
         }
         results.append(result)
 
     total = response["hits"]["total"]["value"]
-    total_pages = (total  + size - 1) // size if total > 0 else 0
+    total_pages = (total + size - 1) // size if total > 0 else 0
 
     result_data = {
-        "results": results,
+        "items": results,
         "total": total,
         "page": page,
         "size": size,
-        "pages": total_pages
+        "totalPages": total_pages,
+        "query": query,
+        "tookMs": 0
     }
 
     cache_result(cache_key, result_data, settings.REDIS_TTL)

@@ -15,12 +15,13 @@ async def search(
     try:
         results = search_documents(q, page, size, file)
 
+        # ✅ ИСПРАВЛЕНО: results → items, pages → totalPages
         return SearchResponse(
-            results=[SearchResultItem(**item) for item in results["results"]],
+            items=[SearchResultItem(**item) for item in results["items"]],
             total=results["total"],
             page=results["page"],
             size=results["size"],
-            pages=results["pages"]
+            totalPages=results["totalPages"]
         )
     except Exception as e:
         raise HTTPException(
