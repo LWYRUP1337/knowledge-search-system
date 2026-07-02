@@ -1,24 +1,30 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import PlainTextResponse
-from app.api.upload import router
-from app.services.index_service import create_index
-import logging
+from contextlib import asynccontextmanager
+import time
 
-logger = logging.getLogger(__name__)
+from app.api.upload import router as upload_router
+from app.api.search import router as search_router
+from app.services.index_service import create_index
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-
-    try:
-        create_index()
-        logger.info("Индекс Elasticsearch успешно создан")
-    except Exception as e:
-        logger.error(f"Ошибка при создании индекса: {e}")
+    print("Создание индекса в Elasticsearch...")
+    for attempt in range(10):
+        try:
+            create_index()
+            print(f"Индекс создан (попытка {attempt + 1})")
+            break
+        except Exception as e:
+            print(f"Попытка {attempt + 1}/10: {e}")
+            if attempt < 9:
+                time.sleep(5)
+            else:
+                print("Не удалось создать индекс после 10 попыток")
     yield
-
+    print("Приложение останавливается...")
 
 app = FastAPI(
     title="Knowledge Base API",
@@ -27,7 +33,8 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-app.include_router(router)
+app.include_router(upload_router)
+app.include_router(search_router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -37,10 +44,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 @app.get("/")
 async def root():
-    return {"message": "Intelligent Search System API"}
+    return {"message": "Knowledge Base API"}
 
 
 @app.get("/health")

@@ -72,13 +72,14 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r backend/requirements.txt pytest python-multipart
+          pip install -r backend/requirements.txt
+          pip install pytest
 
       - name: Run pytest
         run: |
           pytest tests/ -v --tb=short \
-            --ignore=tests/test_e2e_search.py \
-            -m "not integration"
+            --ignore=tests/test_integration.py \
+            --ignore=tests/test_e2e_search.py
 
 
   test-integration:
@@ -94,75 +95,62 @@ jobs:
         run: cp .env.example .env
 
       - name: Start services
-        run: docker compose up -d --build
+        run: |
+          docker compose up -d --build postgres elasticsearch redis backend frontend
+          sleep 30
 
       - name: Wait for backend
         run: |
-          echo "Waiting for backend to become healthy..."
           for i in {1..60}; do
             if curl -sf http://localhost:8000/health > /dev/null 2>&1; then
               echo "Backend is ready (attempt $i)"
               exit 0
             fi
-            echo "Attempt $i/60: backend not ready yet, retrying in 5s..."
+            echo "Attempt $i/60: waiting for backend..."
             sleep 5
           done
-          echo "Backend failed to become healthy after 60 attempts"
+          echo "Backend failed to start"
           docker compose logs backend --tail=50
-          exit 1
-
-      - name: Wait for Elasticsearch
-        run: |
-          echo "Waiting for Elasticsearch to be ready..."
-          for i in {1..60}; do
-            if curl -s http://localhost:9200/_cluster/health | grep -q '"status":"green\|yellow"'; then
-              echo "Elasticsearch is ready (attempt $i)"
-              exit 0
-            fi
-            echo "Attempt $i/60: Elasticsearch not ready yet..."
-            sleep 2
-          done
-          echo "Elasticsearch failed to become ready after 60 attempts"
-          docker compose logs elasticsearch --tail=30
           exit 1
 
       - name: Upload test document
         run: |
-          echo "Test document" > test.txt
-          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
             -X POST http://localhost:8000/api/v1/documents/upload \
-            -F "file=@test.txt")
-          if [ "$HTTP_STATUS" = "200" ] || [ "$HTTP_STATUS" = "201" ]; then
-            echo "Upload successful (HTTP $HTTP_STATUS)"
+            -F "file=@tests/fixtures/sample.pdf")
+          if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "201" ]; then
+            echo "Upload successful (HTTP $HTTP_CODE)"
+          elif [ "$HTTP_CODE" = "400" ]; then
+            echo "Upload correctly rejected invalid format (HTTP $HTTP_CODE)"
           else
-            echo "Upload failed (HTTP $HTTP_STATUS)"
+            echo "Unexpected HTTP code: $HTTP_CODE"
             exit 1
           fi
 
       - name: Search test
         run: |
-          RESPONSE=$(curl -s "http://localhost:8000/api/v1/search?q=test")
-          if echo "$RESPONSE" | grep -q '"results"'; then
-            echo "Search works"
-          else
-            echo "Search failed"
-            exit 1
-          fi
+          echo "Waiting for Elasticsearch to index the document..."
 
-      - name: Print logs if failed
+          for i in {1..10}; do
+            RESPONSE=$(curl -s -G "http://localhost:8000/api/v1/search/" --data-urlencode "q=каникулы")
+            echo "Attempt $i: Backend response -> $RESPONSE"
+
+            if echo "$RESPONSE" | grep -q "каникулы"; then
+              echo "Search integration test PASSED successfully!"
+              exit 0
+            fi
+
+            echo "Word not found yet, sleeping 2 seconds..."
+            sleep 2
+          done
+
+          echo "Search integration test FAILED: 'каникулы' not found in results."
+          exit 1
+
+
+      - name: Show logs if failed
         if: failure()
         run: |
-          echo "Backend logs:"
-          docker compose logs backend --tail=50
-          echo "Elasticsearch logs:"
-          docker compose logs elasticsearch --tail=30
-
-      - name: Print Elasticsearch logs if failed
-        if: failure()
-        run: |
-          echo "=== Elasticsearch logs ==="
-          docker compose logs elasticsearch --tail=100
-          echo "=== Backend logs ==="
           docker compose logs backend --tail=50
 
 

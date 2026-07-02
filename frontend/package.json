@@ -1,25 +1,49 @@
 {
-  "name": "frontend",
+  "name": "svetik-frontend",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "typecheck": "tsc -b",
+    "lint": "eslint .",
+    "mock:init": "msw init public --save"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
   },
   "dependencies": {
+    "@fontsource-variable/geist": "^5.2.9",
+    "@fontsource-variable/geist-mono": "^5.2.8",
+    "@gsap/react": "^2.1.2",
+    "@phosphor-icons/react": "^2.1.10",
+    "@tanstack/react-query": "^5.101.1",
+    "clsx": "^2.1.1",
+    "gsap": "^3.15.0",
     "react": "^19.2.7",
-    "react-dom": "^19.2.7"
+    "react-dom": "^19.2.7",
+    "react-dropzone": "^15.0.0",
+    "react-router-dom": "^7.18.0",
+    "sonner": "^2.0.7",
+    "zustand": "^5.0.14"
   },
   "devDependencies": {
-    "@types/node": "^24.13.2",
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.0.1",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.2",
-    "oxlint": "^1.69.0",
-    "typescript": "~6.0.2",
+    "@vitejs/plugin-react": "^6.0.3",
+    "eslint": "^10.6.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.3",
+    "globals": "^17.7.0",
+    "msw": "^2.14.6",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.62.0",
     "vite": "^8.1.0"
   }
 }
