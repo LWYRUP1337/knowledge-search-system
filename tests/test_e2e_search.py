@@ -2,7 +2,10 @@ import pytest
 import os
 from playwright.sync_api import sync_playwright
 
-BASE_URL = "http://localhost:5173"  
+
+BASE_URL = os.getenv("BASE_URL", "http://localhost:5173")
+
+
 FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixtures')
 
 
@@ -10,7 +13,7 @@ FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixtures')
 def browser():
     """Запускаем браузер один раз для всех тестов."""
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)  
+        browser = p.chromium.launch(headless=True)
         yield browser
         browser.close()
 
@@ -30,7 +33,7 @@ def test_full_user_scenario(browser):
     page.goto(f"{BASE_URL}/login")
     page.wait_for_selector("text=Вход в систему", timeout=30000)
 
-    page.fill('#login', 'demo') 
+    page.fill('#login', 'demo')
     page.fill('#password', 'demo')
 
     page.click('button:has-text("Войти")')
@@ -48,7 +51,7 @@ def test_full_user_scenario(browser):
     page.wait_for_selector("text=Поиск по документам", timeout=30000)
 
     search_input = page.get_by_placeholder("Введите запрос, например: договор оплата")
-    search_input.fill("договор")  
+    search_input.fill("договор")
 
     page.click('button:has-text("Найти")')
 
