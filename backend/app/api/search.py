@@ -15,7 +15,6 @@ async def search(
     try:
         results = search_documents(q, page, size, file)
 
-        # ✅ ИСПРАВЛЕНО: results → items, pages → totalPages
         return SearchResponse(
             items=[SearchResultItem(**item) for item in results["items"]],
             total=results["total"],

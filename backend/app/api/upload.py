@@ -2,7 +2,7 @@ from fastapi import APIRouter, UploadFile, File, HTTPException
 from uuid import uuid4
 import os
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 
 from app.core.config import settings
 from app.core.elasticsearch import es_client
@@ -56,7 +56,7 @@ def list_documents_from_es(page: int = 1, size: int = 10, status: Optional[str] 
         if upload_date_str:
             try:
                 upload_date = datetime.fromisoformat(upload_date_str)
-            except:
+            except Exception:
                 upload_date = datetime.now()
         else:
             upload_date = datetime.now()
