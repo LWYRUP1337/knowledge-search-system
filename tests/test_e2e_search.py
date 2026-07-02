@@ -48,7 +48,7 @@ def test_full_user_scenario(browser):
     page.wait_for_selector("text=Поиск по документам", timeout=30000)
 
     search_input = page.get_by_placeholder("Введите запрос, например: договор оплата")
-    search_input.fill("предоставить")  
+    search_input.fill("период")  
 
     page.click('button:has-text("Найти")')
 
