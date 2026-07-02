@@ -38,7 +38,7 @@ def test_parse_pdf_corrupted():
     file_path = os.path.join(FIXTURES_DIR, 'broken_manual.pdf')
     with open(file_path, 'rb') as f:
         content = f.read()
-    with pytest.raises(ValueError, match="Не удалось извлечь текст"):
+    with pytest.raises(ValueError, match="Ошибка при парсинге PDF"):
         parse_pdf(content, 'broken_manual.pdf')
 
 
